@@ -193,3 +193,11 @@ class TestGroundFacts:
         grounded, dropped = ground_facts(extracted, source)
         assert len(grounded[0]["f"]) == 2
         assert len(dropped) == 0
+
+    def test_free_delivery_grounds_zero(self):
+        """'Delivery free hai' grounds delivery_fee=0."""
+        extracted = [{"i": 1, "f": [{"key": "food_option.delivery_fee", "v": 0, "u": "PKR", "q": "Delivery free hai", "ref": "Standard"}], "c": []}]
+        source = [{"id": 1, "text": "Delivery free hai.", "raw": "Delivery free hai."}]
+        grounded, dropped = ground_facts(extracted, source)
+        assert len(grounded[0]["f"]) == 1
+        assert len(dropped) == 0

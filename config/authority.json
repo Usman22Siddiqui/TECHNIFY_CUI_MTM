@@ -13,7 +13,7 @@
       "food_option": ["authority", "caterer"],
       "food_quantity": ["authority", "caterer", "finance"],
       "judges_confirmed": ["authority", "judging"],
-      "honorarium": ["authority", "finance"],
+      "honorarium": ["authority", "finance", "judging"],
       "judge_min_per_team": ["authority", "judging"],
       "judge_max_teams": ["authority", "judging"],
       "committed_cost": ["authority", "finance"],

@@ -63,6 +63,14 @@ def _split_into_blocks(content: str) -> list[str]:
     2. Try separator lines (----, ====, ****).
     3. Fall back to blank-line separation.
     """
+    # Strip PDF/table boilerplate lines if present
+    cleaned_lines = [
+        ln for ln in content.splitlines()
+        if not re.match(r"^\s*Page\s+\d+\s+of\s+\d+\s*$", ln, re.IGNORECASE)
+        and not re.match(r"^\s*#\s+From\s+Date\s+Message\s*$", ln, re.IGNORECASE)
+    ]
+    content = "\n".join(cleaned_lines)
+
     # Try numbered format: lines starting with "digit." or "digit)"
     numbered_pattern = re.compile(r"^(\d+)[.)]\s", re.MULTILINE)
     matches = list(numbered_pattern.finditer(content))
@@ -72,6 +80,17 @@ def _split_into_blocks(content: str) -> list[str]:
         for i, match in enumerate(matches):
             start = match.start()
             end = matches[i + 1].start() if i + 1 < len(matches) else len(content)
+            blocks.append(content[start:end])
+        return blocks
+
+    # Try space-numbered table rows starting with sequential integers ("1 ...", "2 ...")
+    space_num_pattern = re.compile(r"^(\d+)\s+(?=[A-Za-z\u0600-\u06FF])", re.MULTILINE)
+    space_matches = list(space_num_pattern.finditer(content))
+    if len(space_matches) >= 2 and [int(m.group(1)) for m in space_matches[:2]] == [1, 2]:
+        blocks = []
+        for i, match in enumerate(space_matches):
+            start = match.start()
+            end = space_matches[i + 1].start() if i + 1 < len(space_matches) else len(content)
             blocks.append(content[start:end])
         return blocks
 

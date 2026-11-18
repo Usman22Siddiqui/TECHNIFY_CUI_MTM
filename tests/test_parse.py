@@ -110,6 +110,22 @@ class TestParseMessages:
         finally:
             os.unlink(path)
 
+    def test_space_numbered_table_with_page_headers(self):
+        content = (
+            "1 Office, email 9 Nov Message one text.\n"
+            "Page 1 of 2\n"
+            "# From Date Message\n"
+            "2 Vendor, email 10 Nov Message two text.\n"
+        )
+        path = _write_temp(content)
+        try:
+            msgs = parse_messages(path)
+            assert len(msgs) == 2
+            assert "Page 1 of 2" not in msgs[0]["raw"]
+            assert "Message two" in msgs[1]["raw"]
+        finally:
+            os.unlink(path)
+
 
 class TestComputeHash:
 

@@ -61,6 +61,7 @@ _FRACTION_WORDS: dict[str, float] = {
 }
 
 _HOUR_MARKERS = ("hour", "hr", "ghant", "گھنٹ")
+_ZERO_MARKERS = ("free", "muft", "zero", "مفت", "صفر")
 
 
 def _to_ascii_digits(text: str) -> str:
@@ -188,6 +189,8 @@ def _extract_all_numbers(text: str) -> set[int]:
 
     # 4. If text mentions hours, allow hour -> minute equivalents (e.g. 4 hours -> 240 min)
     lower_text = ascii_text.lower()
+    if any(m in lower_text for m in _ZERO_MARKERS):
+        numbers.add(0)
     if any(m in lower_text for m in _HOUR_MARKERS):
         for match in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:-|\s)?(?:hours?|hrs?|ghant\w*|گھنٹ\w*)", lower_text):
             try:
