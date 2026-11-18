@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t.app_title }} — {{ t.page_heading }}</title>
+  <style>
+{{ font_faces_css | safe }}
+{{ styles_css | safe }}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#plan" class="brand" data-i18n="app_title">{{ t.app_title }}</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#plan" data-i18n="plan">{{ t.plan }}</a>
+      <a href="#trace" data-i18n="trace">{{ t.trace }}</a>
+      <a href="#rejected" data-i18n="rejected">{{ t.rejected }}</a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">{{ t.show_english }}</button>
+      <button type="button" class="lang-btn" data-lang="ur" aria-pressed="false">{{ t.show_urdu }}</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    {% if not messages %}
+      <p class="empty-note" data-i18n="no_messages">{{ t.no_messages }}</p>
+    {% else %}
+    <div class="workspace">
+      <!-- LEFT COLUMN (62%): PLAN -->
+      <div id="plan">
+        <section class="hero">
+          <h1 data-i18n="page_heading">{{ t.page_heading }}</h1>
+          <div class="hero-metrics">
+            <span><span data-i18n="students">{{ t.students }}</span>: <strong data-num="{{ plan.headcount.students }}">{{ plan.headcount.students }}</strong></span>
+            <span><span data-i18n="teams">{{ t.teams }}</span>: <strong data-num="{{ plan.judging.teams }}">{{ plan.judging.teams }}</strong></span>
+            <span><span data-i18n="headcount">{{ t.headcount }}</span>: <strong data-num="{{ plan.headcount.total }}">{{ plan.headcount.total }}</strong></span>
+            <span><span data-i18n="duration">{{ t.duration }}</span>: <strong data-num="{{ plan.schedule.duration_min }}">{{ plan.schedule.duration_min }}</strong> <span data-i18n="minutes">{{ t.minutes }}</span></span>
+          </div>
+          <div class="actions-bar">
+            <button type="button" class="btn btn-primary" id="btn-whatsapp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span data-i18n="copy_whatsapp">{{ t.copy_whatsapp }}</span>
+            </button>
+            <button type="button" class="btn" id="btn-download-trace">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="download_trace">{{ t.download_trace }}</span>
+            </button>
+            <button type="button" class="btn" id="btn-print">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <span data-i18n="print_plan">{{ t.print_plan }}</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- SIX CHECKS -->
+        <section class="section">
+          <h2 data-i18n="checks">{{ t.checks }}</h2>
+          <div class="checks-strip">
+            {% for name in check_names %}
+              {% set chk = checks.get(name, {}) %}
+              <div class="check-row {{ 'check-ok' if chk.ok else 'check-fail' }}">
+                <span class="check-icon" aria-hidden="true">
+                  {% if chk.ok %}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {% else %}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  {% endif %}
+                </span>
+                <div>
+                  <span class="check-name">{{ name }}</span>
+                  <span class="check-detail">{{ chk.detail }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <!-- VENUE (typographic line) -->
+        <section class="section">
+          <h2 data-i18n="venue">{{ t.venue }}</h2>
+          <div class="venue-line">
+            <div>
+              <span class="venue-name">{{ plan.venue.selected or t.unknown }}</span>
+              {% if plan.venue.generator %}
+                <span class="tag tag-ok" data-i18n="generator">{{ t.generator }}</span>
+              {% endif %}
+            </div>
+            <div class="venue-meta">
+              <span data-i18n="capacity">{{ t.capacity }}</span> <span data-num="{{ plan.venue.capacity }}">{{ plan.venue.capacity }}</span>
+              &nbsp;&nbsp;
+              <span data-rs="{{ plan.venue.cost }}">Rs {{ plan.venue.cost }}</span>
+            </div>
+          </div>
+          {% if plan.venue.reason %}
+            <p class="venue-reason">{{ plan.venue.reason }}</p>
+          {% endif %}
+        </section>
+
+        <!-- SCHEDULE (vertical proportional ruler) -->
+        <section class="section">
+          <h2>
+            <span data-i18n="schedule">{{ t.schedule }}</span>
+            <span>
+              {% if plan.schedule.late_buffer_applied %}
+                <span class="tag tag-accent" data-i18n="late_buffer">{{ t.late_buffer }}</span>
+              {% endif %}
+              {% if plan.schedule.prayer_aligned %}
+                <span class="tag tag-ok" data-i18n="prayer_aligned">{{ t.prayer_aligned }}</span>
+              {% endif %}
+            </span>
+          </h2>
+          {% if plan.schedule.blocks %}
+            <div class="schedule-ruler">
+              {% set total_dur = plan.schedule.duration_min if plan.schedule.duration_min and plan.schedule.duration_min != 'unknown' else 240 %}
+              {% for blk in plan.schedule.blocks %}
+                {% set px_h = [34, (blk.minutes / total_dur * 280) | round | int] | max %}
+                <div class="sched-block {{ 'is-prayer' if blk.name == 'prayer_break' else '' }}" style="min-height: {{ px_h }}px;">
+                  <span class="sched-num">{{ "%02d" | format(blk.index) }}</span>
+                  <span class="sched-time">{{ blk.start_label }} – {{ blk.end_label }}</span>
+                  <span class="sched-name">
+                    <span data-i18n="{{ blk.name }}">{{ t.get(blk.name, blk.name) }}</span>
+                    {% if blk.prayer_name %} ({{ blk.prayer_name }}){% endif %}
+                  </span>
+                  <span class="sched-mins"><span data-num="{{ blk.minutes }}">{{ blk.minutes }}</span> <span data-i18n="minutes">{{ t.minutes }}</span></span>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty-note">{{ plan.schedule.reason or t.infeasible }}</p>
+          {% endif %}
+        </section>
+
+        <!-- FOOD (ledger line) -->
+        <section class="section">
+          <h2 data-i18n="food">{{ t.food }}</h2>
+          <div class="food-strip">
+            <div class="food-detail">
+              <strong>{{ plan.food.tier or t.unknown }}</strong>
+              — <span data-num="{{ plan.food.quantity }}">{{ plan.food.quantity }}</span> <span data-i18n="boxes">{{ t.boxes }}</span>
+              × <span data-rs="{{ plan.food.price_per_head }}">Rs {{ plan.food.price_per_head }}</span>
+              {% if plan.food.delivery_fee %}
+                + <span data-i18n="delivery_fee">{{ t.delivery_fee }}</span> <span data-rs="{{ plan.food.delivery_fee }}">Rs {{ plan.food.delivery_fee }}</span>
+              {% endif %}
+              {% if plan.food.halal_required or plan.food.halal %}
+                <span class="tag tag-ok" data-i18n="halal">{{ t.halal }}</span>
+              {% endif %}
+              {% if plan.food.vegetarian_count %}
+                <span class="tag"><span data-i18n="vegetarian">{{ t.vegetarian }}</span>: <span data-num="{{ plan.food.vegetarian_count }}">{{ plan.food.vegetarian_count }}</span></span>
+              {% endif %}
+            </div>
+            <div class="food-total" data-rs="{{ plan.food.cost }}">Rs {{ plan.food.cost }}</div>
+          </div>
+        </section>
+
+        <!-- JUDGING (judge x round grid) -->
+        <section class="section">
+          <h2 data-i18n="judging">{{ t.judging }}</h2>
+          <div class="judge-summary">
+            <span data-num="{{ plan.judging.judges_used }}">{{ plan.judging.judges_used }}</span> <span data-i18n="used">{{ t.used }}</span> /
+            <span data-num="{{ plan.judging.judges_confirmed }}">{{ plan.judging.judges_confirmed }}</span> <span data-i18n="confirmed">{{ t.confirmed }}</span>,
+            <span data-num="{{ plan.judging.teams }}">{{ plan.judging.teams }}</span> <span data-i18n="teams">{{ t.teams }}</span>,
+            <span data-i18n="honorarium">{{ t.honorarium }}</span> <span data-rs="{{ plan.judging.honorarium }}">Rs {{ plan.judging.honorarium }}</span>
+          </div>
+          {% if plan.judging.assignments %}
+            <div class="judge-grid-wrap">
+              <table class="judge-grid">
+                <thead>
+                  <tr>
+                    <th data-i18n="judge_col">{{ t.judge_col }}</th>
+                    {% for r in range(1, plan.judging.rounds + 1) %}
+                      <th><span data-i18n="round_col">{{ t.round_col }}</span> {{ r }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for j_id, t_list in plan.judging.assignments.items() %}
+                    <tr>
+                      <td>{{ j_id }}</td>
+                      {% for r in range(plan.judging.rounds) %}
+                        <td>{% if r < t_list|length %}T{{ "%02d" | format(t_list[r]) }}{% else %}—{% endif %}</td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+          <p class="judge-reserves">
+            <span data-i18n="reserves">{{ t.reserves }}</span>: <strong data-num="{{ plan.judging.reserves }}">{{ plan.judging.reserves }}</strong>
+          </p>
+        </section>
+
+        <!-- BUDGET (right-aligned financial ledger) -->
+        <section class="section">
+          <h2>
+            <span data-i18n="budget">{{ t.budget }}</span>
+            <span class="ledger-controls">
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-lakh">
+                <span data-i18n="lakh_toggle">{{ t.lakh_toggle }}</span>
+              </label>
+              <label class="toggle-label">
+                <input type="checkbox" id="toggle-urdu-digits">
+                <span data-i18n="urdu_digits_toggle">{{ t.urdu_digits_toggle }}</span>
+              </label>
+            </span>
+          </h2>
+          <table class="ledger">
+            <tbody>
+              <tr>
+                <td data-i18n="budget_total_label">{{ t.budget_total_label }}</td>
+                <td class="amt" data-rs="{{ plan.budget.budget_total }}">Rs {{ plan.budget.budget_total }}</td>
+              </tr>
+              <tr>
+                <td data-i18n="venue_cost_label">{{ t.venue_cost_label }}</td>
+                <td class="amt" data-rs="{{ plan.budget.venue_cost }}">Rs {{ plan.budget.venue_cost }}</td>
+              </tr>
+              <tr>
+                <td data-i18n="food_cost_label">{{ t.food_cost_label }}</td>
+                <td class="amt" data-rs="{{ plan.budget.food_cost }}">Rs {{ plan.budget.food_cost }}</td>
+              </tr>
+              <tr>
+                <td data-i18n="judge_cost_label">{{ t.judge_cost_label }}</td>
+                <td class="amt" data-rs="{{ plan.budget.judge_cost }}">Rs {{ plan.budget.judge_cost }}</td>
+              </tr>
+              <tr class="sub-row">
+                <td data-i18n="worst_case">{{ t.worst_case }}</td>
+                <td class="amt" data-rs="{{ plan.budget.judge_cost_worst_case }}">Rs {{ plan.budget.judge_cost_worst_case }}</td>
+              </tr>
+              {% for label, cost in plan.budget.committed_costs.items() %}
+                <tr>
+                  <td><span data-i18n="committed_costs">{{ t.committed_costs }}</span>: {{ label }}</td>
+                  <td class="amt" data-rs="{{ cost }}">Rs {{ cost }}</td>
+                </tr>
+              {% endfor %}
+              <tr class="total-row">
+                <td data-i18n="spent">{{ t.spent }}</td>
+                <td class="amt" data-rs="{{ plan.budget.spent }}">Rs {{ plan.budget.spent }}</td>
+              </tr>
+              <tr class="remaining-row">
+                <td data-i18n="remaining">{{ t.remaining }}</td>
+                <td class="amt {{ 'remaining-ok' if plan.budget.remaining != 'unknown' and plan.budget.remaining >= 0 else 'remaining-fail' }}" data-rs="{{ plan.budget.remaining }}">Rs {{ plan.budget.remaining }}</td>
+              </tr>
+            </tbody>
+          </table>
+          {% if plan.degradation_steps %}
+            <p class="venue-reason"><strong data-i18n="degradation_notes">{{ t.degradation_notes }}</strong>: {{ plan.degradation_steps | join("; ") }}</p>
+          {% endif %}
+        </section>
+
+        <!-- WISHLIST -->
+        <section class="section">
+          <h2 data-i18n="wishlist">{{ t.wishlist }}</h2>
+          {% if plan.budget.wishlist %}
+            <ul class="wishlist-list">
+              {% for item in plan.budget.wishlist %}
+                <li class="wishlist-item">
+                  <span>{{ item.label }}</span>
+                  <span>
+                    <span class="amt" data-rs="{{ item.cost }}">Rs {{ item.cost }}</span>
+                    {% if item.status == 'fits' %}
+                      <span class="tag tag-ok" data-i18n="fits">{{ t.fits }}</span>
+                    {% else %}
+                      <span class="tag tag-fail" data-i18n="does_not_fit">{{ t.does_not_fit }}</span>
+                    {% endif %}
+                  </span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="empty-note" data-i18n="no_wishlist">{{ t.no_wishlist }}</p>
+          {% endif %}
+        </section>
+
+        {% if plan.unhandled_constraints %}
+        <section class="section">
+          <h2 data-i18n="unhandled_constraints">{{ t.unhandled_constraints }}</h2>
+          <p class="empty-note" data-i18n="unhandled_note">{{ t.unhandled_note }}</p>
+          <ul class="wishlist-list">
+            {% for u in plan.unhandled_constraints %}
+              <li class="wishlist-item">
+                <span><code>{{ u.subject }}</code> ({{ u.op }} {{ u.value }})</span>
+                <span class="tag tag-accent">#{{ u.source_id }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+      </div>
+
+      <!-- RIGHT COLUMN (38%): DARK FOREST TRACE TERMINAL -->
+      <aside id="trace" class="trace-panel" aria-label="Trace">
+        <div class="trace-header">
+          <span data-i18n="terminal_title">{{ t.terminal_title }}</span>
+          <span>{{ trace_calls | length }} <span data-i18n="call_label">{{ t.call_label }}</span></span>
+        </div>
+        <div class="trace-body">
+          <div class="trace-line"><span class="trace-prompt">$</span>python run.py &lt;messages&gt;</div>
+
+          {% for call in trace_calls %}
+            <details class="trace-call trace-line">
+              <summary>
+                <span>
+                  <span class="trace-prompt">&gt;</span>
+                  <span class="trace-call-meta">call {{ call.n }}</span>
+                  <span>{{ call.area }}</span>
+                  <span>({{ call.model }})</span>
+                </span>
+                <span class="trace-call-tok">{{ call.total_tokens }} tok</span>
+              </summary>
+              <div class="trace-io">prompt: {{ call.prompt_tokens }} | completion: {{ call.completion_tokens }} | {{ call.seconds }}s
+
+--- input ---
+{{ call.input }}
+
+--- output ---
+{{ call.output }}</div>
+            </details>
+          {% endfor %}
+
+          {% for ev in trace_events %}
+            <div class="trace-line {{ 'trace-ev-reject' if ev.type == 'reject' else ('trace-ev-recompute' if ev.type == 'recompute' else ('trace-ev-check' if ev.type == 'check' else '')) }}">[{{ ev.type }}] {{ ev.text_en }}</div>
+          {% endfor %}
+        </div>
+        <div class="trace-footer">
+          <span data-i18n="total_tokens">{{ t.total_tokens }}</span>
+          <span class="total-num">{{ total_tokens }}</span>
+        </div>
+      </aside>
+    </div>
+
+    <!-- REJECTED MESSAGES (full width below) -->
+    <section id="rejected" class="rejected-section">
+      <h2 data-i18n="rejected">{{ t.rejected }}</h2>
+      {% if rejected_messages %}
+        {% for msg in rejected_messages %}
+          <article class="rejected-item">
+            <div class="rejected-meta">
+              <span data-i18n="message_id">{{ t.message_id }}</span> #{{ msg.id }}
+              ({{ msg.role }}{% if msg.sender %}, {{ msg.sender }}{% endif %}) — {{ msg.reason_code }}
+            </div>
+            <p class="rejected-quote">{{ msg.text }}</p>
+            <p class="rejected-en">{{ msg.reason_en }}</p>
+            <p class="rejected-ur">{{ msg.reason_ur }}</p>
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="empty-note" data-i18n="no_rejected">{{ t.no_rejected }}</p>
+      {% endif %}
+    </section>
+    {% endif %}
+  </main>
+
+  <script id="mtm-data" type="application/json">{{ embedded_json | safe }}</script>
+  <script>
+{{ app_js | safe }}
+  </script>
+</body>
+</html>
