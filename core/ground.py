@@ -45,8 +45,6 @@ _NUMBER_WORDS: dict[str, int] = {
     "assi": 80,
     "nabbe": 90,
     "sau": 100, "so": 100, "سو": 100,
-    "dedh": 150,  # handled specially with multipliers too
-    "dhai": 250,
 }
 
 # Multiplier words (Roman Urdu + Urdu script + English)

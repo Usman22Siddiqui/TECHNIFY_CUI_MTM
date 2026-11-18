@@ -1,0 +1,20 @@
+{
+  "teams": 50,
+  "judges_needed": 17,
+  "judges_used": 17,
+  "judges_confirmed": 20,
+  "reserves": 3,
+  "headcount": 177,
+  "venue_selected": "Main Hall",
+  "venue_cost": 120000,
+  "food_quantity": 177,
+  "food_price_per_head": 900,
+  "food_delivery_fee": 5000,
+  "food_cost": 164300,
+  "judge_cost": 51000,
+  "judge_cost_worst_case": 60000,
+  "committed_total": 25000,
+  "spent": 360300,
+  "remaining": 289700,
+  "wishlist_dj_status": "fits"
+}
