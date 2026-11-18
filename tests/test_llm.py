@@ -128,3 +128,27 @@ class TestCallModel:
         client = LLMClient(model_name="test-model-7b", adapter=_make_adapter())
         client.call_model("reading", "sys", "user")
         assert client.calls[0]["model"] == "test-model-7b"
+
+    def test_fallback_used_when_primary_fails(self, monkeypatch):
+        """If primary HTTP call fails, fallback provider is called and its model recorded."""
+        calls_made = []
+
+        def fake_http(self, base_url, model_name, api_key, system, user):
+            calls_made.append(model_name)
+            if model_name == "primary-model":
+                raise RuntimeError("primary down")
+            return '{"ok": true}', {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30}
+
+        monkeypatch.setattr(LLMClient, "_http_call", fake_http)
+        client = LLMClient(
+            base_url="https://primary.example/v1",
+            model_name="primary-model",
+            api_key="k1",
+            fallback_base_url="https://fallback.example/v1",
+            fallback_model_name="fallback-model",
+            fallback_api_key="k2",
+        )
+        text, usage = client.call_model("reading", "sys", "user")
+        assert calls_made == ["primary-model", "fallback-model"]
+        assert client.calls[0]["model"] == "fallback-model"
+        assert usage["total_tokens"] == 30

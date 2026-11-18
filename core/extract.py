@@ -34,9 +34,16 @@ Output schema (compact keys):
 }
 
 Canonical fact keys (closed vocabulary):
-students, team_size, duration_min, budget_total, staff, prayer_break_min, venue_option (ref=name; fields: capacity, price, generator), food_option (ref=tier; fields: price_per_head, delivery_fee), judges_confirmed, honorarium, judge_min_per_team, judge_max_teams, committed_cost (ref=label), wishlist_item (ref=label), start_time, event_date, late_note.
+- students (count), team_size (count), staff (count)
+- duration_min (min — convert hours to minutes), prayer_break_min (min)
+- budget_total (PKR), honorarium (PKR), committed_cost (PKR, ref=label), wishlist_item (PKR, ref=label)
+- judges_confirmed (count), judge_min_per_team (min — judging minutes per team), judge_max_teams (count — max teams per judge)
+- venue_option.capacity (count, ref=name), venue_option.price (PKR, ref=name), venue_option.generator (bool, ref=name), venue_option.accessible (bool, ref=name)
+- food_option.price_per_head (PKR, ref=tier), food_option.delivery_fee (PKR, ref=tier), food_option.halal (bool, ref=tier)
+- food_quantity (count — only if a message proposes a specific meal box order quantity)
+- start_time (text), event_date (text), late_note (text)
 
-Structured items (venue_option, food_option) emit one fact per field with the same ref, so each number can be verified separately.
+Emit one fact per field with the same ref so each number can be verified separately. Use these exact key names.
 
 Rules:
 1. Money may appear as Rs, PKR, rupay, k, hazar, lakh, lac, crore, or Pakistani digit grouping (X,XX,XXX). Always return plain integers in rupees.
@@ -44,7 +51,7 @@ Rules:
 3. If a value is unclear, omit the fact. Never guess.
 4. Mark requests ("can we get...", "request for...") as k: "request", not fact.
 5. Mark chatter that does not touch venue, schedule, food, judging or budget as noise.
-6. Output JSON only, no prose."""
+6. Output compact JSON only, no prose."""
 
 
 def _clean_json_text(text: str) -> str:
