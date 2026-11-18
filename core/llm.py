@@ -31,12 +31,13 @@ class LLMClient:
         model_name: str | None = None,
         api_key: str | None = None,
         adapter: Callable[..., dict] | None = None,
+        initial_call_counter: int = 0,
     ):
         self.base_url = (base_url or os.getenv("MODEL_BASE_URL", "")).rstrip("/")
         self.model_name = model_name or os.getenv("MODEL_NAME", "")
         self.api_key = api_key or os.getenv("MODEL_API_KEY", "")
         self._adapter = adapter  # test adapter for offline tests
-        self._call_counter = 0
+        self._call_counter = initial_call_counter
         self._calls: list[dict[str, Any]] = []
 
     @property
