@@ -81,5 +81,12 @@
   "degradation_notes": "بجٹ ایڈجسٹمنٹ",
   "start_time": "آغاز کا وقت",
   "late_buffer": "ٹریفک وقفہ شامل",
-  "prayer_aligned": "نماز کے مطابق ترتیب"
+  "prayer_aligned": "نماز کے مطابق ترتیب",
+  "composer_heading": "پیغامات درج کریں",
+  "composer_placeholder": "مکمل پیغامات کا پیک یا ایک نیا اپڈیٹ پیغام یہاں پیسٹ کریں...",
+  "upload_txt": "فائل منتخب کریں (.txt)",
+  "run_messages": "پیغامات چلائیں",
+  "running_messages": "پیغامات پڑھے جا رہے ہیں...",
+  "reset_session": "سیشن ری سیٹ کریں",
+  "live_error_empty": "پہلے پیغامات پیسٹ کریں یا ٹیکسٹ فائل منتخب کریں۔"
 }

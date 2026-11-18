@@ -24,6 +24,35 @@
   </header>
 
   <main class="shell">
+    {% if live_mode %}
+    <section id="live-composer" class="composer" aria-label="Submit messages">
+      <div class="composer-head">
+        <h2 data-i18n="composer_heading">{{ t.composer_heading }}</h2>
+        <span id="composer-status" class="composer-status" role="status" aria-live="polite"></span>
+      </div>
+      <textarea
+        id="composer-text"
+        class="composer-input"
+        data-i18n-placeholder="composer_placeholder"
+        placeholder="{{ t.composer_placeholder }}"
+      ></textarea>
+      <div class="composer-actions">
+        <div class="composer-buttons">
+          <button type="button" class="btn btn-primary" id="btn-run-messages">
+            <span data-i18n="run_messages">{{ t.run_messages }}</span>
+          </button>
+          <label class="btn" for="composer-file">
+            <span data-i18n="upload_txt">{{ t.upload_txt }}</span>
+          </label>
+          <input type="file" id="composer-file" class="composer-file-input" accept=".txt,text/plain">
+          <button type="button" class="btn" id="btn-reset-session">
+            <span data-i18n="reset_session">{{ t.reset_session }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
     {% if not messages %}
       <p class="empty-note" data-i18n="no_messages">{{ t.no_messages }}</p>
     {% else %}

@@ -85,6 +85,13 @@
       }
     });
 
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (dict[key]) {
+        el.setAttribute("placeholder", dict[key]);
+      }
+    });
+
     document.querySelectorAll(".lang-btn").forEach(function (btn) {
       const active = btn.getAttribute("data-lang") === currentLang;
       btn.setAttribute("aria-pressed", active ? "true" : "false");
@@ -234,6 +241,81 @@
     traceLines.forEach(function (el, idx) {
       el.style.animationDelay = idx * step + "ms";
     });
+  }
+
+  // Live web mode composer (active only when served via server.py)
+  const composerEl = document.getElementById("live-composer");
+  if (composerEl) {
+    const textEl = document.getElementById("composer-text");
+    const fileEl = document.getElementById("composer-file");
+    const runBtn = document.getElementById("btn-run-messages");
+    const resetBtn = document.getElementById("btn-reset-session");
+    const statusEl = document.getElementById("composer-status");
+
+    if (fileEl && textEl) {
+      fileEl.addEventListener("change", function () {
+        const f = fileEl.files && fileEl.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function () {
+          textEl.value = String(reader.result || "");
+        };
+        reader.readAsText(f);
+      });
+    }
+
+    if (runBtn && textEl) {
+      runBtn.addEventListener("click", function () {
+        const dict = I18N[currentLang] || I18N.en;
+        const raw = (textEl.value || "").trim();
+        if (!raw) {
+          if (statusEl) {
+            statusEl.textContent = dict.live_error_empty || "Paste message text first.";
+            statusEl.classList.add("is-error");
+          }
+          return;
+        }
+        runBtn.disabled = true;
+        if (statusEl) {
+          statusEl.textContent = dict.running_messages || "Running...";
+          statusEl.classList.remove("is-error");
+        }
+        fetch("/api/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: raw }),
+        })
+          .then(function (resp) {
+            return resp.json().then(function (body) {
+              if (!resp.ok) throw new Error(body.error || "Request failed");
+              return body;
+            });
+          })
+          .then(function () {
+            window.location.reload();
+          })
+          .catch(function (err) {
+            runBtn.disabled = false;
+            if (statusEl) {
+              statusEl.textContent = String(err.message || err);
+              statusEl.classList.add("is-error");
+            }
+          });
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        resetBtn.disabled = true;
+        fetch("/api/reset", { method: "POST" })
+          .then(function () {
+            window.location.reload();
+          })
+          .catch(function () {
+            resetBtn.disabled = false;
+          });
+      });
+    }
   }
 
   applyLanguage(currentLang);

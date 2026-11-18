@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: mind-to-machine-agent
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: MODEL_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: MODEL_NAME
+        value: openai/gpt-oss-20b
+      - key: MODEL_API_KEY
+        sync: false
+      - key: FALLBACK_MODEL_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai
+      - key: FALLBACK_MODEL_NAME
+        value: gemini-2.5-flash
+      - key: FALLBACK_MODEL_API_KEY
+        sync: false

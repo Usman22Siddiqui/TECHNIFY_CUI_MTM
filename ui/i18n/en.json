@@ -81,5 +81,12 @@
   "degradation_notes": "Budget adjustments",
   "start_time": "Start time",
   "late_buffer": "Traffic buffer added",
-  "prayer_aligned": "Prayer aligned"
+  "prayer_aligned": "Prayer aligned",
+  "composer_heading": "Submit messages",
+  "composer_placeholder": "Paste a full message pack or a single follow-up update message here...",
+  "upload_txt": "Load .txt file",
+  "run_messages": "Run messages",
+  "running_messages": "Running reading call...",
+  "reset_session": "Reset session",
+  "live_error_empty": "Paste message text or select a .txt file first."
 }

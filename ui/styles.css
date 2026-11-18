@@ -763,6 +763,76 @@ html[lang="ur"] .btn {
   margin: 0.4rem 0;
 }
 
+/* Live interactive composer (shown only when served via server.py) */
+.composer {
+  margin-bottom: 1.75rem;
+  padding: 1rem 1.15rem;
+  background: var(--cream-deep);
+  border: 1px solid var(--tan);
+  border-radius: var(--r-panel);
+}
+
+.composer-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.composer-head h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin: 0;
+  color: var(--olive);
+}
+
+.composer-input {
+  width: 100%;
+  min-height: 110px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--tan);
+  border-radius: var(--r-cell);
+  background: var(--cream);
+  color: var(--forest);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.composer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.65rem;
+}
+
+.composer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.composer-status {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--olive-muted);
+}
+
+.composer-status.is-error {
+  color: var(--signal-fail);
+}
+
+.composer-file-input {
+  display: none;
+}
+
 /* Print stylesheet (F13: clean A4 plan for Dean's office) */
 @media print {
   body, html {
@@ -774,6 +844,7 @@ html[lang="ur"] .btn {
   .topbar .lang-switch,
   .actions-bar,
   .ledger-controls,
+  .composer,
   .trace-panel {
     display: none !important;
   }

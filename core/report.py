@@ -83,8 +83,12 @@ def _build_embedded_font_faces() -> str:
     return "\n".join(rules)
 
 
-def render_html(state: dict[str, Any], trace: TraceCollector) -> str:
-    """Render a self-contained, offline report.html string."""
+def render_html(
+    state: dict[str, Any],
+    trace: TraceCollector,
+    live_mode: bool = False,
+) -> str:
+    """Render a self-contained, offline report.html string (or live interactive page)."""
     en = load_i18n("en")
     ur = load_i18n("ur")
 
@@ -110,6 +114,7 @@ def render_html(state: dict[str, Any], trace: TraceCollector) -> str:
     template = env.get_template("template.html.j2")
     return template.render(
         t=en,
+        live_mode=live_mode,
         plan=state.get("plan", {}),
         checks=state.get("checks", {}),
         check_names=CHECK_NAMES,
