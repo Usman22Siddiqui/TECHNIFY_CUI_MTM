@@ -11,6 +11,7 @@
       "event_date": ["authority"],
       "venue_option": ["authority", "venue"],
       "food_option": ["authority", "caterer"],
+      "food_quantity": ["authority", "caterer", "finance"],
       "judges_confirmed": ["authority", "judging"],
       "honorarium": ["authority", "finance"],
       "judge_min_per_team": ["authority", "judging"],

@@ -5,8 +5,14 @@
 [schedule]
 # Minimum minutes for arrival/registration buffer
 arrival_buffer_min = 15           # students need time to sign in and find seats
+# Extra arrival minutes added when a traffic/lateness note is present (F11)
+late_buffer_extra_min = 10        # buffer for Islamabad road delays
 # Minimum minutes for opening ceremony
 opening_min = 10                  # welcome, rules, logistics
+# Minimum minutes for lunch / iftar break
+lunch_min = 25                    # time to serve and eat meal boxes
+# Default prayer break minutes when not explicitly specified in messages
+default_prayer_min = 15           # standard congregation break
 # Minimum minutes for closing ceremony
 closing_min = 10                  # results, photos, wrap-up
 # Minimum transition time between judging rounds (minutes)
@@ -17,6 +23,8 @@ build_split_ratio = 0.6           # more time before lunch than after
 [update]
 # Threshold: if no message hash overlap and message count >= this, treat as fresh
 fresh_threshold = 4               # heuristic from UPDATE_ENGINE.md rule 3
+# Factor threshold for rupee unit anomaly guard (F14)
+unit_anomaly_factor = 50          # flags thousands-vs-rupees mix-ups
 
 [format]
 # Default number grouping style: "international" or "lakh"

@@ -1,0 +1,15 @@
+{
+  "city": "Islamabad",
+  "timezone": "PKT",
+  "windows": [
+    { "name": "Dhuhr", "start": "12:15", "end": "14:00", "preferred": "13:15" },
+    { "name": "Asr", "start": "15:30", "end": "17:00", "preferred": "16:15" },
+    { "name": "Maghrib", "start": "17:15", "end": "18:30", "preferred": "17:30" }
+  ],
+  "friday_jumuah": {
+    "name": "Jumuah",
+    "start": "12:45",
+    "end": "14:15",
+    "preferred": "13:00"
+  }
+}
