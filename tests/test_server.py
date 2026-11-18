@@ -58,7 +58,7 @@ def test_live_server_full_lifecycle(tmp_path: pathlib.Path):
         r_empty = httpx.post(f"{base}/api/run", json={"text": "   "})
         assert r_empty.status_code == 400
 
-        # 4. Run fresh sample pack
+        # 4. Run fresh sample pack (persists to out/plan.txt)
         r1 = httpx.post(f"{base}/api/run", json={"text": sample_text})
         assert r1.status_code == 200
         b1 = r1.json()
@@ -66,6 +66,10 @@ def test_live_server_full_lifecycle(tmp_path: pathlib.Path):
         assert b1["committed"] is True
         assert b1["plan"]["headcount"]["total"] == 177
         assert b1["plan"]["budget"]["spent"] == 360300
+        assert (tmp_path / "out" / "plan.txt").exists()
+        r_ptxt = httpx.get(f"{base}/api/plan.txt")
+        assert r_ptxt.status_code == 200
+        assert "150 students" in r_ptxt.text
 
         # 5. Run update (printing cost change -> budget only)
         r2 = httpx.post(f"{base}/api/run", json={"text": change_text})
@@ -107,3 +111,29 @@ def test_offline_report_has_no_composer():
     """Default render_html (used by run.py) stays 100% offline with no composer."""
     html = render_html({"messages": [], "plan": {}, "checks": {}}, TraceCollector())
     assert 'id="live-composer"' not in html
+
+
+def test_desktop_gui_submit_saves_plan_txt_and_schedules(tmp_path: pathlib.Path):
+    """GUI submit helper writes out/plan.txt and runs full planning + scheduling."""
+    from gui import submit_text_to_backend, format_plan_overview
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    sample_text = (root / "tests" / "fixtures" / "sample_pack.txt").read_text(encoding="utf-8")
+    plan_txt = tmp_path / "out" / "plan.txt"
+    state_path = tmp_path / "state" / "state.json"
+    out_dir = tmp_path / "out"
+
+    res = submit_text_to_backend(
+        sample_text,
+        plan_txt_path=plan_txt,
+        state_path=state_path,
+        out_dir=out_dir,
+        client=_offline_adapter("sample_pack"),
+    )
+    assert plan_txt.exists()
+    assert "150 students" in plan_txt.read_text(encoding="utf-8")
+    assert res["committed"] is True
+    assert res["state"]["plan"]["schedule"]["total_minutes"] == 240
+    overview = format_plan_overview(res["state"])
+    assert "SCHEDULE (240 min" in overview
+    assert "[PASS] FIGURES" in overview

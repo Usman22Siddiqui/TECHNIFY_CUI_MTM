@@ -13,7 +13,6 @@ from __future__ import annotations
 import json
 import os
 import pathlib
-import tempfile
 import threading
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -120,6 +119,16 @@ def create_server(
                 )
                 return
 
+            if path == "/api/plan.txt":
+                plan_txt = out_dir / "plan.txt"
+                content = plan_txt.read_text(encoding="utf-8") if plan_txt.exists() else ""
+                self._send_bytes(
+                    HTTPStatus.OK,
+                    "text/plain; charset=utf-8",
+                    content.encode("utf-8"),
+                )
+                return
+
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
 
         def do_POST(self) -> None:
@@ -130,6 +139,9 @@ def create_server(
                     if state_path.exists():
                         archive_state(state_path)
                         state_path.unlink()
+                    plan_txt = out_dir / "plan.txt"
+                    if plan_txt.exists():
+                        plan_txt.unlink()
                 self._send_json(HTTPStatus.OK, {"reset": True})
                 return
 
@@ -152,15 +164,12 @@ def create_server(
                     return
 
                 with pipeline_lock:
-                    tmp_path = None
                     try:
-                        with tempfile.NamedTemporaryFile(
-                            mode="w", suffix=".txt", encoding="utf-8", delete=False
-                        ) as tmp:
-                            tmp.write(text)
-                            tmp_path = pathlib.Path(tmp.name)
+                        out_dir.mkdir(parents=True, exist_ok=True)
+                        plan_txt_path = out_dir / "plan.txt"
+                        plan_txt_path.write_text(text + "\n", encoding="utf-8")
 
-                        incoming = parse_messages(str(tmp_path))
+                        incoming = parse_messages(str(plan_txt_path))
                         if not incoming:
                             self._send_json(HTTPStatus.BAD_REQUEST, {"error": "No messages parsed"})
                             return
@@ -171,9 +180,6 @@ def create_server(
                     except Exception as exc:
                         self._send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
                         return
-                    finally:
-                        if tmp_path is not None and tmp_path.exists():
-                            tmp_path.unlink()
 
                 self._send_json(
                     HTTPStatus.OK,
@@ -184,6 +190,7 @@ def create_server(
                         "unchanged": result["unchanged"],
                         "elapsed": round(result["elapsed"], 2),
                         "total_tokens": result["trace"].total_tokens(),
+                        "plan_txt_path": str(plan_txt_path),
                         "plan": result["state"].get("plan", {}),
                         "checks": result["state"].get("checks", {}),
                     },
