@@ -1,0 +1,24 @@
+{
+  "authority": {
+    "allowed_keys": {
+      "students": ["authority"],
+      "team_size": ["authority"],
+      "duration_min": ["authority"],
+      "budget_total": ["authority", "finance"],
+      "staff": ["authority"],
+      "prayer_break_min": ["authority"],
+      "start_time": ["authority"],
+      "event_date": ["authority"],
+      "venue_option": ["authority", "venue"],
+      "food_option": ["authority", "caterer"],
+      "judges_confirmed": ["authority", "judging"],
+      "honorarium": ["authority", "finance"],
+      "judge_min_per_team": ["authority", "judging"],
+      "judge_max_teams": ["authority", "judging"],
+      "committed_cost": ["authority", "finance"],
+      "wishlist_item": ["authority", "finance", "requester", "participant"],
+      "late_note": ["authority", "venue", "caterer", "judging", "finance", "requester", "participant", "unknown"]
+    }
+  },
+  "roles": ["authority", "finance", "venue", "caterer", "judging", "requester", "participant", "unknown"]
+}

@@ -1,0 +1,23 @@
+# Design parameters for the event planner.
+# These are NOT facts from any message pack. They are design choices
+# with comments explaining why each exists.
+
+[schedule]
+# Minimum minutes for arrival/registration buffer
+arrival_buffer_min = 15           # students need time to sign in and find seats
+# Minimum minutes for opening ceremony
+opening_min = 10                  # welcome, rules, logistics
+# Minimum minutes for closing ceremony
+closing_min = 10                  # results, photos, wrap-up
+# Minimum transition time between judging rounds (minutes)
+transition_min = 5                # judges move, teams reset
+# Default build-time split ratio (part1 : part2)
+build_split_ratio = 0.6           # more time before lunch than after
+
+[update]
+# Threshold: if no message hash overlap and message count >= this, treat as fresh
+fresh_threshold = 4               # heuristic from UPDATE_ENGINE.md rule 3
+
+[format]
+# Default number grouping style: "international" or "lakh"
+default_grouping = "international"

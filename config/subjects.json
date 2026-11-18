@@ -1,0 +1,19 @@
+{
+  "known": [
+    "venue.generator",
+    "venue.capacity_min",
+    "venue.max_price",
+    "venue.accessible",
+    "food.halal",
+    "food.vegetarian_share",
+    "food.max_price_per_head",
+    "schedule.start_time",
+    "schedule.break_min",
+    "schedule.no_session_window",
+    "judging.min_per_team",
+    "judging.max_teams_per_judge",
+    "budget.cap",
+    "budget.reserve",
+    "staff.min"
+  ]
+}
